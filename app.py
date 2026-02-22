@@ -1,6 +1,22 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import requests
+import os
+
+# CREATE APP FIRST
+app = Flask(__name__)
+CORS(app)
+
+ICREDIT_TOKEN = os.environ.get("ICREDIT_TOKEN")
+
+
+@app.route("/")
+def home():
+    return "Server is running"
+
+
 @app.route("/create-payment", methods=["POST"])
 def create_payment():
-
     try:
         data = request.json or {}
 
@@ -42,3 +58,9 @@ def create_payment():
             "error": "Payment creation failed",
             "message": str(e)
         }), 500
+
+
+@app.route("/ipn", methods=["POST"])
+def ipn():
+    print("IPN DATA:", request.json)
+    return "OK", 200
