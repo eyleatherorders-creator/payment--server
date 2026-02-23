@@ -56,8 +56,14 @@ def create_payment():
         response = requests.post(
             "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/GetUrl",
             json=icredit_payload,
-            timeout=20
+            headers={"Content-Type": "application/json"},
+            timeout=20,
+            allow_redirects=False
         )
+        
+        print("STATUS:", response.status_code)
+        print("HEADERS:", response.headers)
+        print("TEXT:", response.text)
 
         print("ICREDIT RESPONSE:", response.text)
 
@@ -75,5 +81,6 @@ def create_payment():
 def ipn():
     print("IPN DATA:", request.json)
     return "OK", 200
+
 
 
