@@ -19,7 +19,8 @@ def home():
 def create_payment():
     try:
         data = request.json or {}
-
+        print("INCOMING DATA:", data)
+        print("TYPE:", type(data))
         customer = data.get("customer", {})
         items = data.get("items", [])
 
@@ -64,3 +65,4 @@ def create_payment():
 def ipn():
     print("IPN DATA:", request.json)
     return "OK", 200
+
