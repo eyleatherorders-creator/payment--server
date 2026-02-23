@@ -21,8 +21,23 @@ def create_payment():
         data = request.json or {}
         print("INCOMING DATA:", data)
         print("TYPE:", type(data))
+
         customer = data.get("customer", {})
         items = data.get("items", [])
+
+        # Convert your special cart structure
+        formatted_items = []
+
+        for item in items:
+            if isinstance(item, list) and len(item) == 2:
+                product = item[0]
+                qty = item[1]
+
+                formatted_items.append({
+                    "Description": product.get("name", "Item"),
+                    "Quantity": qty,
+                    "UnitPrice": product.get("price", 0)
+                })
 
         icredit_payload = {
             "GroupPrivateToken": ICREDIT_TOKEN,
@@ -31,14 +46,7 @@ def create_payment():
             "EmailAddress": customer.get("email", ""),
             "PhoneNumber": customer.get("phone", ""),
             "Currency": 1,
-            "Items": [
-                {
-                    "Description": item.get("name", "Item"),
-                    "Quantity": item.get("qty", 1),
-                    "UnitPrice": item.get("price", 0)
-                }
-                for item in items
-            ],
+            "Items": formatted_items,
             "RedirectURL": "https://yourname.github.io/success.html",
             "FailRedirectURL": "https://yourname.github.io/fail.html",
             "IPNURL": "https://payment-server-8c4r.onrender.com/ipn",
@@ -50,6 +58,8 @@ def create_payment():
             json=icredit_payload,
             timeout=20
         )
+
+        print("ICREDIT RESPONSE:", response.text)
 
         return jsonify(response.json())
 
@@ -65,4 +75,5 @@ def create_payment():
 def ipn():
     print("IPN DATA:", request.json)
     return "OK", 200
+
 
